@@ -18,7 +18,6 @@ public:
     void tambahJalur(string from, string to, int jarak);
     void tampilkanGraf();
     void jalurTercepat(string from, string to);
-    void jalurAlternatif(string from, string to);
 };
 
-#endif // GRAPH_H_INCLUDED
+#endif

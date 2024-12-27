@@ -29,14 +29,9 @@ int main() {
     cout << "Graf stadion:\n";
     graf.tampilkanGraf();
 
-
-
     // Cari jalur terpendek
     cout << "\nJalur tercepat:\n";
     graf.jalurTercepat("Old Trafford", "Vitality Stadium");
-    // Cari jalur alternatif
-    cout << "\nJalur alternatif:\n";
-    graf.jalurAlternatif("Old Trafford", "Vitality Stadium");
 
     return 0;
 }
