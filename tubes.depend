@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1733332620 source:d:\documents\programmingproject\cplusplus\tubes\main.cpp
+	"graph.h"
+
+1735280549 d:\documents\programmingproject\cplusplus\tubes\graph.h
+	<iostream>
+	<string>
+	<unordered_map>
+	<vector>
+	<limits>
+	<queue>
+
+1735280536 source:d:\documents\programmingproject\cplusplus\tubes\graph.cpp
+	"graph.h"
+	<algorithm>
+
