@@ -1,64 +1,213 @@
+// graph.cpp
 #include "graph.h"
-#include <algorithm>
 
-void Graph::tambahJalur(string from, string to, int jarak) {
-    adjacencyList[from].push_back({to, jarak});
-    adjacencyList[to].push_back({from, jarak}); // Graf tak berarah
+// Initialize global variable
+Vertex* first = nullptr;
+
+Vertex* createNewVertex(string stadion) {
+    Vertex* newVertex = new Vertex;
+    newVertex->namaStadion = stadion;
+    newVertex->firstEdge = nullptr;
+    newVertex->next = nullptr;
+    return newVertex;
 }
 
-void Graph::tampilkanGraf() {
-    for (const auto& node : adjacencyList) {
-        cout << "Stadion: " << node.first << "\n";
-        for (const auto& neighbor : node.second) {
-            cout << "  -> " << neighbor.first << " (" << neighbor.second << " km)\n";
+Edge* createNewEdge(string dest, int jarak) {
+    Edge* newEdge = new Edge;
+    newEdge->destStadion = dest;
+    newEdge->jarak = jarak;
+    newEdge->next = nullptr;
+    return newEdge;
+}
+
+Vertex* findVertex(string stadion) {
+    Vertex* current = first;
+    while (current != nullptr && current->namaStadion != stadion) {
+        current = current->next;
+    }
+    return current;
+}
+
+void insertVertex(string stadion) {
+    if (findVertex(stadion) == nullptr) {
+        Vertex* newVertex = createNewVertex(stadion);
+        if (first == nullptr) {
+            first = newVertex;
+        } else {
+            newVertex->next = first;
+            first = newVertex;
         }
     }
 }
 
-void Graph::jalurTercepat(string from, string to) {
-    unordered_map<string, int> distances;
-    unordered_map<string, string> previous;
-    priority_queue<pair<int, string>, vector<pair<int, string>>, greater<>> pq;
+void tambahJalur(string from, string to, int jarak) {
+    // Pastikan kedua vertex ada
+    insertVertex(from);
+    insertVertex(to);
 
-    // Inisialisasi jarak
-    for (const auto& node : adjacencyList) {
-        distances[node.first] = numeric_limits<int>::max();
+    // Tambah edge dari from ke to
+    Vertex* fromVertex = findVertex(from);
+    Edge* newEdge = createNewEdge(to, jarak);
+    if (fromVertex->firstEdge == nullptr) {
+        fromVertex->firstEdge = newEdge;
+    } else {
+        newEdge->next = fromVertex->firstEdge;
+        fromVertex->firstEdge = newEdge;
     }
-    distances[from] = 0;
-    pq.push({0, from});
 
-    while (!pq.empty()) {
-        auto [currentDistance, currentNode] = pq.top();
-        pq.pop();
+    // Tambah edge dari to ke from (graf tidak berarah)
+    Vertex* toVertex = findVertex(to);
+    Edge* newEdgeReverse = createNewEdge(from, jarak);
+    if (toVertex->firstEdge == nullptr) {
+        toVertex->firstEdge = newEdgeReverse;
+    } else {
+        newEdgeReverse->next = toVertex->firstEdge;
+        toVertex->firstEdge = newEdgeReverse;
+    }
+}
 
-        if (currentDistance > distances[currentNode]) continue;
+void tampilkanGraf() {
+    Vertex* currentVertex = first;
+    while (currentVertex != nullptr) {
+        cout << "Stadion: " << currentVertex->namaStadion << "\n";
+        Edge* currentEdge = currentVertex->firstEdge;
+        while (currentEdge != nullptr) {
+            cout << "  -> " << currentEdge->destStadion
+                 << " (" << currentEdge->jarak << " km)\n";
+            currentEdge = currentEdge->next;
+        }
+        currentVertex = currentVertex->next;
+    }
+}
 
-        for (const auto& neighbor : adjacencyList[currentNode]) {
-            int newDistance = currentDistance + neighbor.second;
-            if (newDistance < distances[neighbor.first]) {
-                distances[neighbor.first] = newDistance;
-                previous[neighbor.first] = currentNode;
-                pq.push({newDistance, neighbor.first});
+void jalurTercepat(string from, string to) {
+    // Hitung jumlah vertex
+    int jumlahVertex = 0;
+    Vertex* temp = first;
+    while (temp != nullptr) {
+        jumlahVertex++;
+        temp = temp->next;
+    }
+
+    // Struktur untuk menyimpan informasi jalur
+    struct JalurInfo {
+        string prevStadion;
+        int jarak;
+        bool visited;
+    };
+
+    // Alokasi array untuk jalur info dan daftar stadion
+    JalurInfo* jalurInfo = new JalurInfo[jumlahVertex];
+    string* stadionList = new string[jumlahVertex];
+
+    // Inisialisasi array
+    temp = first;
+    for (int i = 0; i < jumlahVertex; i++) {
+        stadionList[i] = temp->namaStadion;
+        jalurInfo[i].jarak = INT_MAX;
+        jalurInfo[i].prevStadion = "";
+        jalurInfo[i].visited = false;
+        temp = temp->next;
+    }
+
+    // Set jarak awal
+    for (int i = 0; i < jumlahVertex; i++) {
+        if (stadionList[i] == from) {
+            jalurInfo[i].jarak = 0;
+            break;
+        }
+    }
+
+    // Algoritma Dijkstra
+    for (int count = 0; count < jumlahVertex - 1; count++) {
+        // Cari vertex dengan jarak minimum
+        int minDist = INT_MAX;
+        int minIndex = -1;
+
+        for (int i = 0; i < jumlahVertex; i++) {
+            if (!jalurInfo[i].visited && jalurInfo[i].jarak <= minDist) {
+                minDist = jalurInfo[i].jarak;
+                minIndex = i;
             }
         }
+
+        if (minIndex == -1) break;
+
+        // Mark vertex sebagai visited
+        jalurInfo[minIndex].visited = true;
+
+        // Update jarak ke tetangga
+        Vertex* currentVertex = findVertex(stadionList[minIndex]);
+        Edge* currentEdge = currentVertex->firstEdge;
+
+        while (currentEdge != nullptr) {
+            int targetIndex = -1;
+            for (int i = 0; i < jumlahVertex; i++) {
+                if (stadionList[i] == currentEdge->destStadion) {
+                    targetIndex = i;
+                    break;
+                }
+            }
+
+            if (!jalurInfo[targetIndex].visited &&
+                jalurInfo[minIndex].jarak != INT_MAX &&
+                jalurInfo[minIndex].jarak + currentEdge->jarak < jalurInfo[targetIndex].jarak) {
+                jalurInfo[targetIndex].jarak = jalurInfo[minIndex].jarak + currentEdge->jarak;
+                jalurInfo[targetIndex].prevStadion = stadionList[minIndex];
+            }
+
+            currentEdge = currentEdge->next;
+        }
     }
 
-    if (distances[to] == numeric_limits<int>::max()) {
+    // Tampilkan hasil
+    int targetIndex = -1;
+    for (int i = 0; i < jumlahVertex; i++) {
+        if (stadionList[i] == to) {
+            targetIndex = i;
+            break;
+        }
+    }
+
+    if (jalurInfo[targetIndex].jarak == INT_MAX) {
         cout << "Tidak ada jalur dari " << from << " ke " << to << ".\n";
-        return;
+    } else {
+        // Rekonstruksi jalur
+        string currentStadion = to;
+        string path = currentStadion;
+
+        while (currentStadion != from) {
+            for (int i = 0; i < jumlahVertex; i++) {
+                if (stadionList[i] == currentStadion) {
+                    currentStadion = jalurInfo[i].prevStadion;
+                    path = currentStadion + " -> " + path;
+                    break;
+                }
+            }
+        }
+
+        cout << "Jalur tercepat dari " << from << " ke " << to << ":\n";
+        cout << path << "\n";
+        cout << "Total jarak: " << jalurInfo[targetIndex].jarak << " km\n";
     }
 
-    // Menampilkan jalur terpendek
-    vector<string> path;
-    for (string at = to; at != ""; at = previous[at]) {
-        path.push_back(at);
-    }
-    reverse(path.begin(), path.end());
+    // Cleanup
+    delete[] jalurInfo;
+    delete[] stadionList;
+}
 
-    cout << "Jalur tercepat dari " << from << " ke " << to << ":\n";
-    for (size_t i = 0; i < path.size(); i++) {
-        cout << path[i];
-        if (i != path.size() - 1) cout << " -> ";
+void cleanupGraf() {
+    Vertex* currentVertex = first;
+    while (currentVertex != nullptr) {
+        Edge* currentEdge = currentVertex->firstEdge;
+        while (currentEdge != nullptr) {
+            Edge* tempEdge = currentEdge;
+            currentEdge = currentEdge->next;
+            delete tempEdge;
+        }
+        Vertex* tempVertex = currentVertex;
+        currentVertex = currentVertex->next;
+        delete tempVertex;
     }
-    cout << "\nTotal jarak: " << distances[to] << " km\n";
+    first = nullptr;
 }
