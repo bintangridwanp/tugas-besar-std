@@ -2,13 +2,14 @@
 
 int main() {
     // Tambahkan jalur antarstadion
-    tambahJalur("Old Trafford", "Etihad Stadium", 7);
+    tambahJalur("Old Trafford", "Etihad Stadium", 10);
 
     tambahJalur("Etihad Stadium", "Anfield", 20);
 
     tambahJalur("Anfield", "Goodison Park", 30);
 
     tambahJalur("Goodison Park", "Molineux Stadium", 40);
+
     tambahJalur("Goodison Park", "St James' Park", 70);
 
     tambahJalur("Molineux Stadium", "Villa Park", 50);
@@ -16,6 +17,7 @@ int main() {
     tambahJalur("St James' Park", "City Ground", 80);
 
     tambahJalur("Villa Park", "King Power Stadium", 60);
+
     tambahJalur("City Ground", "King Power Stadium", 90);
 
     tambahJalur("King Power Stadium", "London Stadium", 100);
@@ -48,7 +50,13 @@ int main() {
     tampilkanGraf();
 
     cout << "\nJalur tercepat:\n";
-    jalurTercepat("Old Trafford", "Anfield");
+    jalurTercepat("Bramall Lane", "Old Trafford");
+
+    // Menemukan stadion dengan jalur terpanjang
+    stadionJarakTerpanjang();
+
+    // Mencari jalur dengan bobot lebih dari 40
+    jalurBerat(100);
 
     // Bersihkan memory sebelum program selesai
     cleanupGraf();

@@ -196,6 +196,61 @@ void jalurTercepat(string from, string to) {
     delete[] stadionList;
 }
 
+void stadionJarakTerpanjang() {
+    Vertex* currentVertex = first;
+    string stadionTerpanjang = "";
+    int jarakTerpanjang = 0;
+
+    cout << "\nMencari stadion dengan jalur terpanjang...\n";
+
+    // Periksa setiap stadion
+    while (currentVertex != nullptr) {
+        Edge* currentEdge = currentVertex->firstEdge;
+
+        while (currentEdge != nullptr) {
+            if (currentEdge->jarak > jarakTerpanjang) {
+                jarakTerpanjang = currentEdge->jarak;
+                stadionTerpanjang = currentVertex->namaStadion + " -> " + currentEdge->destStadion;
+            }
+            currentEdge = currentEdge->next;
+        }
+
+        currentVertex = currentVertex->next;
+    }
+
+    if (stadionTerpanjang != "") {
+        cout << "Jalur terpanjang adalah: " << stadionTerpanjang
+             << " dengan jarak " << jarakTerpanjang << " km.\n";
+    } else {
+        cout << "Tidak ada jalur dalam graf.\n";
+    }
+}
+
+void jalurBerat(int threshold) {
+    cout << "\nJalur dengan bobot lebih dari " << threshold << " km:\n";
+    bool ditemukan = false;
+
+    Vertex* currentVertex = first;
+    while (currentVertex != nullptr) {
+        Edge* currentEdge = currentVertex->firstEdge;
+
+        while (currentEdge != nullptr) {
+            if (currentEdge->jarak > threshold) {
+                cout << currentVertex->namaStadion << " -> " << currentEdge->destStadion
+                     << " (" << currentEdge->jarak << " km)\n";
+                ditemukan = true;
+            }
+            currentEdge = currentEdge->next;
+        }
+
+        currentVertex = currentVertex->next;
+    }
+
+    if (!ditemukan) {
+        cout << "Tidak ada jalur dengan bobot lebih dari " << threshold << " km.\n";
+    }
+}
+
 void cleanupGraf() {
     Vertex* currentVertex = first;
     while (currentVertex != nullptr) {
