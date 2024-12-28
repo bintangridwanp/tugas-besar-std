@@ -1,9 +1,10 @@
 // graph.cpp
 #include "graph.h"
 
-// Initialize global variable
+// Inisialisasi variabel global
 Vertex* first = nullptr;
 
+// Membuat vertex baru
 Vertex* createNewVertex(string stadion) {
     Vertex* newVertex = new Vertex;
     newVertex->namaStadion = stadion;
@@ -12,6 +13,7 @@ Vertex* createNewVertex(string stadion) {
     return newVertex;
 }
 
+// Membuat edge baru
 Edge* createNewEdge(string dest, int jarak) {
     Edge* newEdge = new Edge;
     newEdge->destStadion = dest;
@@ -20,6 +22,7 @@ Edge* createNewEdge(string dest, int jarak) {
     return newEdge;
 }
 
+// Mencari vertex berdasarkan nama stadion
 Vertex* findVertex(string stadion) {
     Vertex* current = first;
     while (current != nullptr && current->namaStadion != stadion) {
@@ -28,6 +31,7 @@ Vertex* findVertex(string stadion) {
     return current;
 }
 
+// Menambahkan vertex baru ke dalam graf
 void insertVertex(string stadion) {
     if (findVertex(stadion) == nullptr) {
         Vertex* newVertex = createNewVertex(stadion);
@@ -40,6 +44,7 @@ void insertVertex(string stadion) {
     }
 }
 
+// Menambahkan edge antara dua vertex
 void tambahJalur(string from, string to, int jarak) {
     // Pastikan kedua vertex ada
     insertVertex(from);
@@ -66,6 +71,7 @@ void tambahJalur(string from, string to, int jarak) {
     }
 }
 
+// Menampilkan graf
 void tampilkanGraf() {
     Vertex* currentVertex = first;
     while (currentVertex != nullptr) {
@@ -80,6 +86,7 @@ void tampilkanGraf() {
     }
 }
 
+// Menemukan jalur tercepat menggunakan algoritma Dijkstra
 void jalurTercepat(string from, string to) {
     // Hitung jumlah vertex
     int jumlahVertex = 0;
@@ -133,7 +140,7 @@ void jalurTercepat(string from, string to) {
 
         if (minIndex == -1) break;
 
-        // Mark vertex sebagai visited
+        // Tandai vertex sebagai visited
         jalurInfo[minIndex].visited = true;
 
         // Update jarak ke tetangga
@@ -191,11 +198,12 @@ void jalurTercepat(string from, string to) {
         cout << "Total jarak: " << jalurInfo[targetIndex].jarak << " km\n";
     }
 
-    // Cleanup
+    // Bersihkan memori
     delete[] jalurInfo;
     delete[] stadionList;
 }
 
+// Menemukan stadion dengan jalur terpanjang
 void stadionJarakTerpanjang() {
     Vertex* currentVertex = first;
     string stadionTerpanjang = "";
@@ -226,6 +234,7 @@ void stadionJarakTerpanjang() {
     }
 }
 
+// Menampilkan jalur dengan bobot lebih dari threshold
 void jalurBerat(int threshold) {
     cout << "\nJalur dengan bobot lebih dari " << threshold << " km:\n";
     bool ditemukan = false;
@@ -251,6 +260,7 @@ void jalurBerat(int threshold) {
     }
 }
 
+// Membersihkan memori graf
 void cleanupGraf() {
     Vertex* currentVertex = first;
     while (currentVertex != nullptr) {

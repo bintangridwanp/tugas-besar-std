@@ -27,11 +27,8 @@ void insertVertex(string stadion);
 void tambahJalur(string from, string to, int jarak);
 void tampilkanGraf();
 void jalurTercepat(string from, string to);
-
 void stadionJarakTerpanjang();
-
 void jalurBerat(int threshold);
-
 void cleanupGraf();
 
 #endif
