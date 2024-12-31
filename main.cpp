@@ -1,7 +1,7 @@
 #include "graph.h"
+#include <iostream>
 
 int main() {
-    // Tambahkan jalur antarstadion
     tambahJalur("Old_Trafford", "Etihad_Stadium", 10);
     tambahJalur("Etihad_Stadium", "Anfield", 20);
     tambahJalur("Anfield", "Goodison_Park", 30);
@@ -24,8 +24,7 @@ int main() {
     tambahJalur("Stadium_Falmer", "Bramall_Lane", 190);
     tambahJalur("Bramall_Lane", "Old_Trafford", 200);
 
-    // Untuk tes
-    tambahJalur("Bandung", "Solo", 220);
+//  tambahJalur("Bandung", "Solo", 220);
 
     int pilihan;
     string stadion1, stadion2;
@@ -37,7 +36,7 @@ int main() {
         cout << "|1. Tambah jalur antarstadion                        |\n";
         cout << "|2. Tampilkan graf stadion                           |\n";
         cout << "|3. Cari jalur tercepat                              |\n";
-        cout << "|4. Cari stadion dengan jalur terpanjang             |\n";
+        cout << "|4. Cari stadion terjauh dari stadion saat ini       |\n";
         cout << "|5. Cari jalur dengan bobot lebih dari Batas (km)    |\n";
         cout << "|6. Keluar                                           |\n";
         cout << "|----------------------------------------------------|\n";
@@ -45,7 +44,6 @@ int main() {
         cin >> pilihan;
 
         if (pilihan == 1) {
-            // Menambahkan jalur antarstadion
             cout << "Masukkan nama stadion asal: ";
             cin >> stadion1;
             cout << "Masukkan nama stadion tujuan: ";
@@ -54,27 +52,21 @@ int main() {
             cin >> jarak;
             tambahJalur(stadion1, stadion2, jarak);
         } else if (pilihan == 2) {
-            // Menampilkan graf stadion
             cout << "Graf stadion:\n";
             tampilkanGraf();
         } else if (pilihan == 3) {
-            // Mencari jalur tercepat antara dua stadion
             cout << "Masukkan nama stadion asal: ";
             cin >> stadion1;
             cout << "Masukkan nama stadion tujuan: ";
             cin >> stadion2;
             jalurTercepat(stadion1, stadion2);
         } else if (pilihan == 4) {
-            // Mencari stadion dengan jalur terpanjang
             stadionJarakTerpanjang();
         } else if (pilihan == 5) {
-            // Mencari jalur dengan bobot lebih dari threshold
             cout << "Masukkan Batas jarak (km): ";
             cin >> threshold;
             jalurBerat(threshold);
         } else if (pilihan == 6) {
-            // Membersihkan memori graf dan keluar dari program
-            cleanupGraf();
             cout << "Keluar dari program.\n";
         } else {
             cout << "Pilihan tidak valid. Silakan coba lagi.\n";
