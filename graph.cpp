@@ -1,10 +1,8 @@
-// graph.cpp
 #include "graph.h"
 
 // Inisialisasi variabel global
 Vertex* first = nullptr;
 
-// Membuat vertex baru
 Vertex* createNewVertex(string stadion) {
     Vertex* newVertex = new Vertex;
     newVertex->namaStadion = stadion;
@@ -13,7 +11,6 @@ Vertex* createNewVertex(string stadion) {
     return newVertex;
 }
 
-// Membuat edge baru
 Edge* createNewEdge(string dest, int jarak) {
     Edge* newEdge = new Edge;
     newEdge->destStadion = dest;
@@ -22,7 +19,6 @@ Edge* createNewEdge(string dest, int jarak) {
     return newEdge;
 }
 
-// Mencari vertex berdasarkan nama stadion
 Vertex* findVertex(string stadion) {
     Vertex* current = first;
     while (current != nullptr && current->namaStadion != stadion) {
@@ -31,10 +27,10 @@ Vertex* findVertex(string stadion) {
     return current;
 }
 
-// Menambahkan vertex baru ke dalam graf
 void insertVertex(string stadion) {
     if (findVertex(stadion) == nullptr) {
         Vertex* newVertex = createNewVertex(stadion);
+
         if (first == nullptr) {
             first = newVertex;
         } else {
@@ -44,13 +40,11 @@ void insertVertex(string stadion) {
     }
 }
 
-// Menambahkan edge antara dua vertex
 void tambahJalur(string from, string to, int jarak) {
-    // Pastikan kedua vertex ada
     insertVertex(from);
     insertVertex(to);
 
-    // Tambah edge dari from ke to
+    //insert first
     Vertex* fromVertex = findVertex(from);
     Edge* newEdge = createNewEdge(to, jarak);
     if (fromVertex->firstEdge == nullptr) {
@@ -60,7 +54,6 @@ void tambahJalur(string from, string to, int jarak) {
         fromVertex->firstEdge = newEdge;
     }
 
-    // Tambah edge dari to ke from (graf tidak berarah)
     Vertex* toVertex = findVertex(to);
     Edge* newEdgeReverse = createNewEdge(from, jarak);
     if (toVertex->firstEdge == nullptr) {
@@ -71,7 +64,6 @@ void tambahJalur(string from, string to, int jarak) {
     }
 }
 
-// Menampilkan graf
 void tampilkanGraf() {
     Vertex* currentVertex = first;
     while (currentVertex != nullptr) {
@@ -86,7 +78,6 @@ void tampilkanGraf() {
     }
 }
 
-// Menemukan jalur tercepat menggunakan algoritma Dijkstra
 void jalurTercepat(string from, string to) {
     // Hitung jumlah vertex
     int jumlahVertex = 0;
@@ -203,38 +194,40 @@ void jalurTercepat(string from, string to) {
     delete[] stadionList;
 }
 
-// Menemukan stadion dengan jalur terpanjang
 void stadionJarakTerpanjang() {
-    Vertex* currentVertex = first;
+    string cariStadion;
+    cout << "|Masukkan nama stadion: ";
+    cin >> cariStadion;
+
+    Vertex* currentVertex = findVertex(cariStadion);
+    while (currentVertex == nullptr) {
+        cout << "Stadion tidak ada, silakan masukkan nama stadion yang valid: ";
+        cin >> cariStadion;
+        currentVertex = findVertex(cariStadion);
+    }
+
     string stadionTerpanjang = "";
     int jarakTerpanjang = 0;
 
-    cout << "\nMencari stadion dengan jalur terpanjang...\n";
+    cout << "\nMencari jalur terpanjang dari stadion " << cariStadion << "...\n";
 
-    // Periksa setiap stadion
-    while (currentVertex != nullptr) {
-        Edge* currentEdge = currentVertex->firstEdge;
-
-        while (currentEdge != nullptr) {
-            if (currentEdge->jarak > jarakTerpanjang) {
-                jarakTerpanjang = currentEdge->jarak;
-                stadionTerpanjang = currentVertex->namaStadion + " -> " + currentEdge->destStadion;
-            }
-            currentEdge = currentEdge->next;
+    Edge* currentEdge = currentVertex->firstEdge;
+    while (currentEdge != nullptr) {
+        if (currentEdge->jarak > jarakTerpanjang) {
+            jarakTerpanjang = currentEdge->jarak;
+            stadionTerpanjang = cariStadion + " -> " + currentEdge->destStadion;
         }
-
-        currentVertex = currentVertex->next;
+        currentEdge = currentEdge->next;
     }
 
     if (stadionTerpanjang != "") {
-        cout << "Jalur terpanjang adalah: " << stadionTerpanjang
-             << " dengan jarak " << jarakTerpanjang << " km.\n";
+        cout << "Jalur terpanjang dari " << cariStadion << " adalah: "
+             << stadionTerpanjang << " dengan jarak " << jarakTerpanjang << " km.\n";
     } else {
-        cout << "Tidak ada jalur dalam graf.\n";
+        cout << "Stadion " << cariStadion << " tidak memiliki jalur keluar.\n";
     }
 }
 
-// Menampilkan jalur dengan bobot lebih dari threshold
 void jalurBerat(int threshold) {
     cout << "\nJalur dengan bobot lebih dari " << threshold << " km:\n";
     bool ditemukan = false;
@@ -260,19 +253,3 @@ void jalurBerat(int threshold) {
     }
 }
 
-// Membersihkan memori graf
-void cleanupGraf() {
-    Vertex* currentVertex = first;
-    while (currentVertex != nullptr) {
-        Edge* currentEdge = currentVertex->firstEdge;
-        while (currentEdge != nullptr) {
-            Edge* tempEdge = currentEdge;
-            currentEdge = currentEdge->next;
-            delete tempEdge;
-        }
-        Vertex* tempVertex = currentVertex;
-        currentVertex = currentVertex->next;
-        delete tempVertex;
-    }
-    first = nullptr;
-}
